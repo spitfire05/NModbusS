@@ -152,7 +152,11 @@
                 if (!(ex is IOException || ex is FormatException || ex is ObjectDisposedException))
                 {
                     //throw;
-                    Trace.WriteLine(ex);
+                    Trace.TraceError(ex.Message);
+                }
+                else
+                {
+                    Trace.TraceInformation(ex.Message);
                 }
             }
         }
