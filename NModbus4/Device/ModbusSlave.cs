@@ -39,7 +39,7 @@ namespace Modbus.Device
         /// <summary>
         ///     Gets or sets the data store.
         /// </summary>
-        public DataStore DataStore { get; set; }
+        public IDataStore DataStore { get; set; }
 
         /// <summary>
         ///     Gets or sets the unit ID.
@@ -51,10 +51,10 @@ namespace Modbus.Device
         /// </summary>
         public abstract void Listen();
 
-        internal static ReadCoilsInputsResponse ReadDiscretes(ReadCoilsInputsRequest request, DataStore dataStore,
-            ModbusDataCollection<bool> dataSource)
+        internal static ReadCoilsInputsResponse ReadDiscretes(ReadCoilsInputsRequest request, IDataStore dataStore,
+            IModbusDataCollection<bool> dataSource)
         {
-            DiscreteCollection data = DataStore.ReadData<DiscreteCollection, bool>(dataStore, dataSource,
+            DiscreteCollection data = dataStore.ReadData<DiscreteCollection, bool>(dataSource,
                 request.StartAddress, request.NumberOfPoints, dataStore.SyncRoot);
             var response = new ReadCoilsInputsResponse(request.FunctionCode, request.SlaveAddress, data.ByteCount, data);
 
@@ -62,9 +62,9 @@ namespace Modbus.Device
         }
 
         internal static ReadHoldingInputRegistersResponse ReadRegisters(ReadHoldingInputRegistersRequest request,
-            DataStore dataStore, ModbusDataCollection<ushort> dataSource)
+            IDataStore dataStore, IModbusDataCollection<ushort> dataSource)
         {
-            RegisterCollection data = DataStore.ReadData<RegisterCollection, ushort>(dataStore, dataSource,
+            RegisterCollection data = dataStore.ReadData<RegisterCollection, ushort>(dataSource,
                 request.StartAddress, request.NumberOfPoints, dataStore.SyncRoot);
             var response = new ReadHoldingInputRegistersResponse(request.FunctionCode, request.SlaveAddress, data);
 
@@ -72,18 +72,18 @@ namespace Modbus.Device
         }
 
         internal static WriteSingleCoilRequestResponse WriteSingleCoil(WriteSingleCoilRequestResponse request,
-            DataStore dataStore, ModbusDataCollection<bool> dataSource)
+            IDataStore dataStore, IModbusDataCollection<bool> dataSource)
         {
-            DataStore.WriteData(dataStore, new DiscreteCollection(request.Data[0] == Modbus.CoilOn), dataSource,
+            dataStore.WriteData(new DiscreteCollection(request.Data[0] == Modbus.CoilOn), dataSource,
                 request.StartAddress, dataStore.SyncRoot);
 
             return request;
         }
 
         internal static WriteMultipleCoilsResponse WriteMultipleCoils(WriteMultipleCoilsRequest request,
-            DataStore dataStore, ModbusDataCollection<bool> dataSource)
+            IDataStore dataStore, IModbusDataCollection<bool> dataSource)
         {
-            DataStore.WriteData(dataStore, request.Data.Take(request.NumberOfPoints), dataSource, request.StartAddress,
+            dataStore.WriteData(request.Data.Take(request.NumberOfPoints), dataSource, request.StartAddress,
                 dataStore.SyncRoot);
             var response = new WriteMultipleCoilsResponse(request.SlaveAddress, request.StartAddress, request.NumberOfPoints);
 
@@ -91,17 +91,17 @@ namespace Modbus.Device
         }
 
         internal static WriteSingleRegisterRequestResponse WriteSingleRegister(
-            WriteSingleRegisterRequestResponse request, DataStore dataStore, ModbusDataCollection<ushort> dataSource)
+            WriteSingleRegisterRequestResponse request, IDataStore dataStore, IModbusDataCollection<ushort> dataSource)
         {
-            DataStore.WriteData(dataStore, request.Data, dataSource, request.StartAddress, dataStore.SyncRoot);
+            dataStore.WriteData(request.Data, dataSource, request.StartAddress, dataStore.SyncRoot);
 
             return request;
         }
 
         internal static WriteMultipleRegistersResponse WriteMultipleRegisters(WriteMultipleRegistersRequest request,
-            DataStore dataStore, ModbusDataCollection<ushort> dataSource)
+            IDataStore dataStore, IModbusDataCollection<ushort> dataSource)
         {
-            DataStore.WriteData(dataStore, request.Data, dataSource, request.StartAddress, dataStore.SyncRoot);
+            dataStore.WriteData(request.Data, dataSource, request.StartAddress, dataStore.SyncRoot);
             var response = new WriteMultipleRegistersResponse(request.SlaveAddress, request.StartAddress, request.NumberOfPoints);
 
             return response;

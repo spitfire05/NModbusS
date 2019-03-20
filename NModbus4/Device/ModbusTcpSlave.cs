@@ -164,7 +164,11 @@ namespace Modbus.Device
                     {
                         if (slave._server == null) // Checks for disposal to an otherwise unnecessary exception (which is slow and hinders debugging).
                             return;
-                        socket = slave.Server.Server.EndAccept(ar);
+                        try
+                        {
+                            socket = slave.Server.Server.EndAccept(ar);
+                        }
+                        catch (Exception) { }
                     }
 
                     TcpClient client = new TcpClient {Client = socket};

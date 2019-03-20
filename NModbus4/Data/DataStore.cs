@@ -12,7 +12,7 @@ namespace Modbus.Data
     ///     The underlying collections are thread safe when using the ModbusMaster API to read/write values.
     ///     You can use the SyncRoot property to synchronize direct access to the DataStore collections.
     /// </summary>
-    public class DataStore
+    public class DataStore : IDataStore
     {
         private readonly object _syncRoot = new object();
 
@@ -50,20 +50,40 @@ namespace Modbus.Data
         /// </summary>
         public ModbusDataCollection<bool> CoilDiscretes { get; private set; }
 
+        IModbusDataCollection<bool> IDataStore.CoilDiscretes
+        {
+            get { return CoilDiscretes; }
+        }
+
         /// <summary>
         ///     Gets the input discretes.
         /// </summary>
         public ModbusDataCollection<bool> InputDiscretes { get; private set; }
+
+        IModbusDataCollection<bool> IDataStore.InputDiscretes
+        {
+            get { return InputDiscretes; }
+        }
 
         /// <summary>
         ///     Gets the holding registers.
         /// </summary>
         public ModbusDataCollection<ushort> HoldingRegisters { get; private set; }
 
+        IModbusDataCollection<ushort> IDataStore.HoldingRegisters
+        {
+            get { return HoldingRegisters; }
+        }
+
         /// <summary>
         ///     Gets the input registers.
         /// </summary>
         public ModbusDataCollection<ushort> InputRegisters { get; private set; }
+
+        IModbusDataCollection<ushort> IDataStore.InputRegisters
+        {
+            get { return InputRegisters; }
+        }
 
         /// <summary>
         ///     An object that can be used to synchronize direct access to the DataStore collections.
@@ -78,7 +98,7 @@ namespace Modbus.Data
         /// </summary>
         /// <typeparam name="T">The collection type.</typeparam>
         /// <typeparam name="U">The type of elements in the collection.</typeparam>
-        internal static T ReadData<T, U>(DataStore dataStore, ModbusDataCollection<U> dataSource, ushort startAddress,
+        public T ReadData<T, U>(IModbusDataCollection<U> dataSource, ushort startAddress,
             ushort count, object syncRoot) where T : Collection<U>, new()
         {
             int startIndex = startAddress + 1;
@@ -94,7 +114,7 @@ namespace Modbus.Data
             for (int i = 0; i < count; i++)
                 result.Add(dataToRetrieve[i]);
 
-            dataStore.DataStoreReadFrom.Raise(dataStore,
+            DataStoreReadFrom.Raise(this,
                 DataStoreEventArgs.CreateDataStoreEventArgs(startAddress, dataSource.ModbusDataType, result));
 
             return result;
@@ -104,8 +124,8 @@ namespace Modbus.Data
         ///     Write data to data store.
         /// </summary>
         /// <typeparam name="TData">The type of the data.</typeparam>
-        internal static void WriteData<TData>(DataStore dataStore, IEnumerable<TData> items,
-            ModbusDataCollection<TData> destination, ushort startAddress, object syncRoot)
+        public void WriteData<TData>(IEnumerable<TData> items,
+            IModbusDataCollection<TData> destination, ushort startAddress, object syncRoot)
         {
             int startIndex = startAddress + 1;
 
@@ -113,9 +133,9 @@ namespace Modbus.Data
                 throw new InvalidModbusRequestException(Modbus.IllegalDataAddress);
 
             lock (syncRoot)
-                Update(items, destination, startIndex);
+                Update(items, (IList<TData>)destination, startIndex);
 
-            dataStore.DataStoreWrittenTo.Raise(dataStore,
+            DataStoreWrittenTo.Raise(this,
                 DataStoreEventArgs.CreateDataStoreEventArgs(startAddress, destination.ModbusDataType, items));
         }
 

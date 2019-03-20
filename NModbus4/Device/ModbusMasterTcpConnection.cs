@@ -155,7 +155,10 @@
                 // Otherwise, the request is discarded and the slave awaits the next message. If the master is unable to synchronize
                 //the frame, it can drop the connection.
                 if (!(ex is IOException || ex is FormatException || ex is ObjectDisposedException))
-                    throw;
+                {
+                    //throw;
+                    Debug.WriteLine(ex);
+                }
             }
         }
 

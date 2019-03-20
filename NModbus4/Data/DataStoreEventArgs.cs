@@ -35,7 +35,7 @@
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public DiscriminatedUnion<ReadOnlyCollection<bool>, ReadOnlyCollection<ushort>> Data { get; private set; }
 
-        internal static DataStoreEventArgs CreateDataStoreEventArgs<T>(ushort startAddress,
+        public static DataStoreEventArgs CreateDataStoreEventArgs<T>(ushort startAddress,
             ModbusDataType modbusDataType, IEnumerable<T> data)
         {
             if (data == null)

@@ -7,7 +7,7 @@ namespace Modbus.Data
     /// <summary>
     ///     A 1 origin collection represetative of the Modbus Data Model.
     /// </summary>
-    public class ModbusDataCollection<TData> : Collection<TData>
+    public class ModbusDataCollection<TData> : Collection<TData>, IModbusDataCollection<TData>
     {
         private bool _allowZeroElement = true;
 
@@ -39,7 +39,7 @@ namespace Modbus.Data
             _allowZeroElement = false;
         }
 
-        internal ModbusDataType ModbusDataType { get; set; }
+        public ModbusDataType ModbusDataType { get; set; }
 
         /// <summary>
         ///     Adds a default element to the collection.

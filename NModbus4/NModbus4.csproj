@@ -10,6 +10,7 @@
     <AssemblyName>NModbus4</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile />
+    <RuntimeIdentifier>win</RuntimeIdentifier>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\NModbus4.xml</DocumentationFile>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -46,6 +47,8 @@
     <Compile Include="Data\DataStore.cs" />
     <Compile Include="Data\DataStoreFactory.cs" />
     <Compile Include="Data\DiscreteCollection.cs" />
+    <Compile Include="Data\IDataStore.cs" />
+    <Compile Include="Data\IModbusDataCollection.cs" />
     <Compile Include="Data\ModbusDataCollection.cs" />
     <Compile Include="Data\ModbusDataType.cs" />
     <Compile Include="Data\RegisterCollection.cs" />
