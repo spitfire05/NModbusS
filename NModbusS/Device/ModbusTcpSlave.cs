@@ -1,3 +1,5 @@
+using System.Net;
+
 namespace Modbus.Device
 {
     using System;
@@ -129,6 +131,8 @@ namespace Modbus.Device
             {
                 if (IsSocketConnected(master.Value.TcpClient.Client) == false)
                 {
+                    var endpoint = (IPEndPoint) master.Value.TcpClient.Client.RemoteEndPoint;
+                    Trace.WriteLine($"PollInterval dropping connection to {endpoint.Address}:{endpoint.Port}");
                     master.Value.Dispose();
                 }
             }
