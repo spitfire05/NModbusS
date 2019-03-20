@@ -105,7 +105,7 @@ namespace Modbus.Device
         /// </summary>
         public override void Listen()
         {
-            Debug.WriteLine("Start Modbus Tcp Server.");
+            Trace.WriteLine(string.Format("Start Modbus Tcp Server."));
 
             lock (_serverLock)
             {
@@ -147,7 +147,7 @@ namespace Modbus.Device
                 throw new ArgumentException(msg);
             }
 
-            Debug.WriteLine("Removed Master {0}", e.EndPoint);
+            Trace.WriteLine(string.Format("Removed Master {0}", e.EndPoint));
         }
 
         private static void AcceptCompleted(IAsyncResult ar)
@@ -177,12 +177,12 @@ namespace Modbus.Device
 
                     slave._masters.TryAdd(client.Client.RemoteEndPoint.ToString(), masterConnection);
 
-                    Debug.WriteLine("Accept completed.");
+                    Trace.WriteLine(string.Format("Accept completed."));
                 }
                 catch (IOException ex)
                 {
                     // Abandon the connection attempt and continue to accepting the next connection.
-                    Debug.WriteLine("Accept failed: " + ex.Message);
+                    Trace.WriteLine(string.Format("Accept failed: " + ex.Message));
                 }
 
                 // Accept another client
