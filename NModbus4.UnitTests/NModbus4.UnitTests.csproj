@@ -107,12 +107,6 @@
     <Compile Include="Utility\ModbusUtilityFixture.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NModbus4\NModbus4.csproj">
-      <Project>{FF96B252-2B24-44A1-A09C-6401B5D7ED23}</Project>
-      <Name>NModbus4</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

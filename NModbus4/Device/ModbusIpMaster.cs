@@ -2,7 +2,7 @@ namespace Modbus.Device
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using System.IO.Ports;
+    //using System.IO.Ports;
     using System.Net.Sockets;
     using System.Threading.Tasks;
 
@@ -43,18 +43,6 @@ namespace Modbus.Device
                 throw new InvalidOperationException(Resources.UdpClientNotConnected);
 
             return CreateIp(new UdpClientAdapter(udpClient));
-        }
-
-        /// <summary>
-        ///     Modbus IP master factory method.
-        /// </summary>
-        [SuppressMessage("Microsoft.Naming", "CA1706:ShortAcronymsShouldBeUppercase", Justification = "Breaking change.")]
-        public static ModbusIpMaster CreateIp(SerialPort serialPort)
-        {
-            if (serialPort == null)
-                throw new ArgumentNullException("serialPort");
-
-            return CreateIp(new SerialPortAdapter(serialPort));
         }
 
         /// <summary>
