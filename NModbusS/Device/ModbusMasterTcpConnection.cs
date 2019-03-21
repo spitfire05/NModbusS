@@ -39,8 +39,8 @@
             _readFrameCompletedCallback = ReadFrameCompleted;
             _writeCompletedCallback = WriteCompleted;
 
-            Trace.WriteLine(string.Format("Creating new Master connection at IP:{0}", EndPoint));
-            Trace.WriteLine(string.Format("Begin reading header."));
+            Debug.WriteLine(string.Format("Creating new Master connection at IP:{0}", EndPoint));
+            Debug.WriteLine(string.Format("Begin reading header."));
 
             Stream.BeginRead(_mbapHeader, 0, 6, _readHeaderCompletedCallback, null);
         }
@@ -67,21 +67,21 @@
 
         private void ReadHeaderCompleted(IAsyncResult ar)
         {
-            Trace.WriteLine(string.Format("Read header completed."));
+            Debug.WriteLine(string.Format("Read header completed."));
 
             CatchExceptionAndRemoveMasterEndPoint(ar, (thisRef, asyncResult) =>
             {
                 // this is the normal way a master closes its connection
                 if (thisRef.Stream.EndRead(asyncResult) == 0)
                 {
-                    Trace.WriteLine(string.Format("0 bytes read, Master has closed Socket connection."));
+                    Debug.WriteLine(string.Format("0 bytes read, Master has closed Socket connection."));
                     thisRef.ModbusMasterTcpConnectionClosed.Raise(thisRef, new TcpConnectionEventArgs(thisRef.EndPoint));
                     return;
                 }
 
-                Trace.WriteLine(string.Format("MBAP header: {0}", string.Join(", ", thisRef._mbapHeader)));
+                Debug.WriteLine(string.Format("MBAP header: {0}", string.Join(", ", thisRef._mbapHeader)));
                 ushort frameLength = (ushort)IPAddress.HostToNetworkOrder(BitConverter.ToInt16(thisRef._mbapHeader, 4));
-                Trace.WriteLine(string.Format("{0} bytes in PDU.", frameLength));
+                Debug.WriteLine(string.Format("{0} bytes in PDU.", frameLength));
                 thisRef._messageFrame = new byte[frameLength];
 
                 thisRef.Stream.BeginRead(thisRef._messageFrame, 0, frameLength, thisRef._readFrameCompletedCallback, null);
@@ -92,9 +92,9 @@
         {
             CatchExceptionAndRemoveMasterEndPoint(ar, (thisRef, asyncResult) =>
             {
-                Trace.WriteLine(string.Format("Read Frame completed {0} bytes", thisRef.Stream.EndRead(asyncResult)));
+                Debug.WriteLine(string.Format("Read Frame completed {0} bytes", thisRef.Stream.EndRead(asyncResult)));
                 byte[] frame = thisRef._mbapHeader.Concat(thisRef._messageFrame).ToArray();
-                Trace.WriteLine(string.Format("RX: {0}", string.Join(", ", frame)));
+                Debug.WriteLine(string.Format("RX: {0}", string.Join(", ", frame)));
 
                 IModbusMessage request =
                     ModbusMessageFactory.CreateModbusRequest(frame.Slice(6, frame.Length - 6).ToArray());
@@ -106,19 +106,19 @@
 
                 // write response
                 byte[] responseFrame = thisRef.Transport.BuildMessageFrame(response);
-                Trace.WriteLine(string.Format("TX: {0}", string.Join(", ", responseFrame)));
+                Debug.WriteLine(string.Format("TX: {0}", string.Join(", ", responseFrame)));
                 thisRef.Stream.BeginWrite(responseFrame, 0, responseFrame.Length, thisRef._writeCompletedCallback, null);
             }, EndPoint);
         }
 
         private void WriteCompleted(IAsyncResult ar)
         {
-            Trace.WriteLine(string.Format("End write."));
+            Debug.WriteLine(string.Format("End write."));
 
             CatchExceptionAndRemoveMasterEndPoint(ar, (thisRef, asyncResult) =>
             {
                 thisRef.Stream.EndWrite(asyncResult);
-                Trace.WriteLine(string.Format("Begin reading another request."));
+                Debug.WriteLine(string.Format("Begin reading another request."));
                 thisRef.Stream.BeginRead(thisRef._mbapHeader, 0, 6, thisRef._readHeaderCompletedCallback, null);
             }, EndPoint);
         }
@@ -142,7 +142,7 @@
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(string.Format("Exception processing request: [{0}] {1}", ex.GetType().Name, ex.Message));
+                Debug.WriteLine(string.Format("Exception processing request: [{0}] {1}", ex.GetType().Name, ex.Message));
 
                 // This will typically result in the exception being unhandled, which will terminate the thread pool thread and
                 // thereby the process, depending on the process's configuration. Such a crash would cause all connections to be
@@ -154,10 +154,9 @@
                     //throw;
                     Trace.TraceError(ex.Message);
                 }
-                else
-                {
-                    Trace.TraceInformation(ex.Message);
-                }
+
+                Trace.TraceInformation($"Closing connection with {EndPoint}");
+                _client.Client.Close();
             }
         }
 

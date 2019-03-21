@@ -107,7 +107,7 @@ namespace Modbus.Device
         /// </summary>
         public override void Listen()
         {
-            Trace.WriteLine(string.Format("Start Modbus Tcp Server."));
+            Debug.WriteLine(string.Format("Start Modbus Tcp Server."));
 
             lock (_serverLock)
             {
@@ -132,7 +132,7 @@ namespace Modbus.Device
                 if (IsSocketConnected(master.Value.TcpClient.Client) == false)
                 {
                     var endpoint = (IPEndPoint) master.Value.TcpClient.Client.RemoteEndPoint;
-                    Trace.WriteLine($"PollInterval dropping connection to {endpoint.Address}:{endpoint.Port}");
+                    Trace.TraceInformation($"PollInterval dropping connection to {endpoint.Address}:{endpoint.Port}");
                     master.Value.Dispose();
                 }
             }
@@ -151,7 +151,7 @@ namespace Modbus.Device
                 throw new ArgumentException(msg);
             }
 
-            Trace.WriteLine(string.Format("Removed Master {0}", e.EndPoint));
+            Debug.WriteLine(string.Format("Removed Master {0}", e.EndPoint));
         }
 
         private static void AcceptCompleted(IAsyncResult ar)
@@ -181,12 +181,12 @@ namespace Modbus.Device
 
                     slave._masters.TryAdd(client.Client.RemoteEndPoint.ToString(), masterConnection);
 
-                    Trace.WriteLine(string.Format("Accept completed."));
+                    Debug.WriteLine(string.Format("Accept completed."));
                 }
                 catch (IOException ex)
                 {
                     // Abandon the connection attempt and continue to accepting the next connection.
-                    Trace.WriteLine(string.Format("Accept failed: " + ex.Message));
+                    Debug.WriteLine(string.Format("Accept failed: " + ex.Message));
                 }
 
                 // Accept another client

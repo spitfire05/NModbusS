@@ -114,7 +114,7 @@ namespace Modbus.Device
             IModbusMessage response;
             try
             {
-                Trace.WriteLine(request.ToString());
+                Debug.WriteLine(request.ToString());
                 var eventArgs = new ModbusSlaveRequestEventArgs(request);
                 ModbusSlaveRequestReceived.Raise(this, eventArgs);
 
@@ -166,7 +166,7 @@ namespace Modbus.Device
                     default:
                         string errorMessage = String.Format(CultureInfo.InvariantCulture, "Unsupported function code {0}",
                             request.FunctionCode);
-                        Trace.WriteLine(string.Format(errorMessage));
+                        Debug.WriteLine(string.Format(errorMessage));
                         throw new InvalidModbusRequestException(Modbus.IllegalFunction);
                 }
             }
