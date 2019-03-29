@@ -46,7 +46,7 @@ namespace Modbus.Device
         /// </summary>
         public override void Listen()
         {
-            Debug.WriteLine(string.Format("Start Modbus Udp Server."));
+            Trace.WriteLine(string.Format("Start Modbus Udp Server."));
 
             try
             {
@@ -57,8 +57,8 @@ namespace Modbus.Device
 
                     frame = _udpClient.Receive(ref masterEndPoint);
 
-                    Debug.WriteLine(string.Format("Read Frame completed {0} bytes", frame.Length));
-                    Debug.WriteLine(string.Format("RX: {0}", string.Join(", ", frame)));
+                    Trace.WriteLine(string.Format("Read Frame completed {0} bytes", frame.Length));
+                    Trace.WriteLine(string.Format("RX: {0}", string.Join(", ", frame)));
 
                     IModbusMessage request =
                         ModbusMessageFactory.CreateModbusRequest(frame.Slice(6, frame.Length - 6).ToArray());
@@ -70,7 +70,7 @@ namespace Modbus.Device
 
                     // write response
                     byte[] responseFrame = Transport.BuildMessageFrame(response);
-                    Debug.WriteLine(string.Format("TX: {0}", string.Join(", ", responseFrame)));
+                    Trace.WriteLine(string.Format("TX: {0}", string.Join(", ", responseFrame)));
                     _udpClient.Send(responseFrame, responseFrame.Length, masterEndPoint);
                 }
             }

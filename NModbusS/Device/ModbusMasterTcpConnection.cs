@@ -39,7 +39,7 @@
             _readFrameCompletedCallback = ReadFrameCompleted;
             _writeCompletedCallback = WriteCompleted;
 
-            Debug.WriteLine(string.Format("Creating new Master connection at IP:{0}", EndPoint));
+            Trace.WriteLine(string.Format("Creating new Master connection at IP:{0}", EndPoint));
             Debug.WriteLine(string.Format("Begin reading header."));
 
             Stream.BeginRead(_mbapHeader, 0, 6, _readHeaderCompletedCallback, null);
@@ -142,7 +142,7 @@
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(string.Format("Exception processing request: [{0}] {1}", ex.GetType().Name, ex.Message));
+                Trace.WriteLine(string.Format("Exception processing request: [{0}] {1}", ex.GetType().Name, ex.Message));
 
                 // This will typically result in the exception being unhandled, which will terminate the thread pool thread and
                 // thereby the process, depending on the process's configuration. Such a crash would cause all connections to be
@@ -155,8 +155,23 @@
                     Trace.TraceError(ex.Message);
                 }
 
-                Trace.TraceInformation($"Closing connection with {EndPoint}");
-                _client.Client.Close();
+                CloseConnection();
+            }
+        }
+
+        public void CloseConnection()
+        {
+            Trace.WriteLine($"Closing connection with {EndPoint}");
+            try
+            {
+                _client.Close();
+            }
+            catch (Exception e)
+            {
+                if (!(e is ObjectDisposedException))
+                {
+                    Trace.TraceWarning("While closing connection: {0}", e);
+                }
             }
         }
 

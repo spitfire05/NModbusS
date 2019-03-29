@@ -166,7 +166,7 @@ namespace Modbus.Device
                     default:
                         string errorMessage = String.Format(CultureInfo.InvariantCulture, "Unsupported function code {0}",
                             request.FunctionCode);
-                        Debug.WriteLine(string.Format(errorMessage));
+                        Trace.TraceError(string.Format(errorMessage));
                         throw new InvalidModbusRequestException(Modbus.IllegalFunction);
                 }
             }

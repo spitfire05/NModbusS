@@ -107,7 +107,7 @@ namespace Modbus.Device
         /// </summary>
         public override void Listen()
         {
-            Debug.WriteLine(string.Format("Start Modbus Tcp Server."));
+            Trace.WriteLine(string.Format("Start Modbus Tcp Server."));
 
             lock (_serverLock)
             {
@@ -129,11 +129,24 @@ namespace Modbus.Device
         {
             foreach (var master in _masters.ToList())
             {
-                if (IsSocketConnected(master.Value.TcpClient.Client) == false)
+                try
                 {
-                    var endpoint = (IPEndPoint) master.Value.TcpClient.Client.RemoteEndPoint;
-                    Trace.TraceInformation($"PollInterval dropping connection to {endpoint.Address}:{endpoint.Port}");
-                    master.Value.Dispose();
+                    if (IsSocketConnected(master.Value.TcpClient.Client) == false)
+                    {
+                        var endpoint = (IPEndPoint) master.Value.TcpClient.Client.RemoteEndPoint;
+                        Trace.WriteLine(
+                            $"PollInterval dropping connection to {endpoint.Address}:{endpoint.Port}");
+                        master.Value.CloseConnection();
+                        master.Value.Dispose();
+                        _masters.TryRemove(master.Key, out _);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (!(ex is ObjectDisposedException))
+                    {
+                        Trace.TraceError("OnTimer: {0}", ex.Message);
+                    }
                 }
             }
         }
@@ -151,7 +164,7 @@ namespace Modbus.Device
                 throw new ArgumentException(msg);
             }
 
-            Debug.WriteLine(string.Format("Removed Master {0}", e.EndPoint));
+            Trace.WriteLine(string.Format("Removed Master {0}", e.EndPoint));
         }
 
         private static void AcceptCompleted(IAsyncResult ar)
@@ -181,12 +194,12 @@ namespace Modbus.Device
 
                     slave._masters.TryAdd(client.Client.RemoteEndPoint.ToString(), masterConnection);
 
-                    Debug.WriteLine(string.Format("Accept completed."));
+                    Trace.WriteLine(string.Format("Accept completed."));
                 }
                 catch (IOException ex)
                 {
                     // Abandon the connection attempt and continue to accepting the next connection.
-                    Debug.WriteLine(string.Format("Accept failed: " + ex.Message));
+                    Trace.WriteLine(string.Format("Accept failed: " + ex.Message));
                 }
 
                 // Accept another client

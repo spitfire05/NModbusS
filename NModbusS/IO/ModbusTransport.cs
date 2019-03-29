@@ -135,7 +135,7 @@ namespace Modbus.IO
                                 readAgain = exceptionResponse.SlaveExceptionCode == Modbus.Acknowledge;
                                 if (readAgain)
                                 {
-                                    Debug.WriteLine(string.Format(
+                                    Trace.WriteLine(string.Format(
                                         "Received ACKNOWLEDGE slave exception response, waiting {0} milliseconds and retrying to read response.",
                                         _waitToRetryMilliseconds));
                                     Sleep(WaitToRetryMilliseconds);
@@ -163,7 +163,7 @@ namespace Modbus.IO
                     if (SlaveBusyUsesRetryCount && attempt++ > _retries)
                         throw;
 
-                    Debug.WriteLine(string.Format(
+                    Trace.WriteLine(string.Format(
                         "Received SLAVE_DEVICE_BUSY exception response, waiting {0} milliseconds and resubmitting request.",
                         _waitToRetryMilliseconds));
                     Sleep(WaitToRetryMilliseconds);
@@ -175,7 +175,7 @@ namespace Modbus.IO
                         e is TimeoutException ||
                         e is IOException)
                     {
-                        Debug.WriteLine(string.Format("{0}, {1} retries remaining - {2}", e.GetType().Name, _retries - attempt + 1, e));
+                        Trace.WriteLine(string.Format("{0}, {1} retries remaining - {2}", e.GetType().Name, _retries - attempt + 1, e));
 
                         if (attempt++ > _retries)
                             throw;
