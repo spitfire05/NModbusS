@@ -144,15 +144,10 @@
             {
                 Trace.WriteLine(string.Format("Exception processing request: [{0}] {1}", ex.GetType().Name, ex.Message));
 
-                // This will typically result in the exception being unhandled, which will terminate the thread pool thread and
-                // thereby the process, depending on the process's configuration. Such a crash would cause all connections to be
-                // dropped, even if the slave were restarted.
-                // Otherwise, the request is discarded and the slave awaits the next message. If the master is unable to synchronize
-                //the frame, it can drop the connection.
-                if (!(ex is IOException || ex is FormatException || ex is ObjectDisposedException))
+                if (!(ex is IOException || ex is FormatException || ex is ObjectDisposedException || ex is NullReferenceException))
                 {
-                    //throw;
                     Trace.TraceError(ex.Message);
+                    Trace.WriteLine(ex.StackTrace);
                 }
 
                 CloseConnection();
