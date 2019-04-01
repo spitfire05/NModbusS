@@ -153,6 +153,7 @@
                 {
                     //throw;
                     Trace.TraceError(ex.Message);
+                    Trace.WriteLine(ex.StackTrace);
                 }
 
                 CloseConnection();
