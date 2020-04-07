@@ -120,6 +120,10 @@ namespace Modbus.IO
                 {
                     lock (_syncLock)
                     {
+                        // Discard read buffer just before writing a request
+                        // Garbage in receive buffer can cause transaction ID off-by-one errors!
+                        _streamResource.DiscardInBuffer();
+
                         Write(message);
 
                         bool readAgain;
